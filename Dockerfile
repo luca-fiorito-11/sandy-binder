@@ -43,10 +43,10 @@ RUN git clone --depth 1 https://github.com/njoy/NJOY2016.git \
  && cd NJOY2016 && mkdir build && cd build \
  && cmake -DPython3_EXECUTABLE=$(which python3) .. \
  && make -j$(nproc) && make install \
- # Save binary and remove everything else
- && cp /usr/local/bin/njoy /tmp/njoy_binary \
  && apt-get purge -y build-essential gfortran cmake git \
  && apt-get autoremove -y
+# # Save binary and remove everything else
+# && cp /usr/local/bin/njoy /tmp/njoy_binary \
 # && rm -rf /var/lib/apt/lists/* /app/NJOY2016 \
 # && mv /tmp/njoy_binary /usr/local/bin/njoy
 #    
