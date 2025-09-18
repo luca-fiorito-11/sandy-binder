@@ -1,4 +1,18 @@
-FROM python:3.9-slim
+FROM python:3.11-slim
+
+# Avoid writing .pyc files and enable unbuffered output
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \
+    build-essential \
+    gfortran \
+    cmake \
+    git \
+    curl \
+    && rm -rf /var/lib/apt/lists/*
+
 # install the notebook package
 RUN pip install --no-cache --upgrade pip && \
     pip install --no-cache notebook jupyterlab \
