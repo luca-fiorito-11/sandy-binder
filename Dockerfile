@@ -46,9 +46,9 @@ RUN git clone --depth 1 https://github.com/njoy/NJOY2016.git \
  # Save binary and remove everything else
  && cp /usr/local/bin/njoy /tmp/njoy_binary \
  && apt-get purge -y build-essential gfortran cmake git \
- && apt-get autoremove -y \
- && rm -rf /var/lib/apt/lists/* /app/NJOY2016 \
- && mv /tmp/njoy_binary /usr/local/bin/njoy
-    
+ && apt-get autoremove -y
+# && rm -rf /var/lib/apt/lists/* /app/NJOY2016 \
+# && mv /tmp/njoy_binary /usr/local/bin/njoy
+#    
 # Make NJOY available via env var
-ENV NJOY=/usr/local/bin/njoy
+# ENV NJOY=/usr/local/bin/njoy
