@@ -41,7 +41,7 @@ USER ${USER}
 # --- Build NJOY2016 and keep only the binary ---
 RUN git clone --depth 1 https://github.com/njoy/NJOY2016.git \
  && cd NJOY2016 && mkdir build && cd build \
- && FC=gfortran CFLAGS="-w" FFLAGS="-w" cmake -DPython3_EXECUTABLE=$(which python3) .. \
+ && cmake -DPython3_EXECUTABLE=$(which python3) .. \
  && make -j$(nproc) && make install \
  # Save binary and remove everything else
  && cp /usr/local/bin/njoy /tmp/njoy_binary \
