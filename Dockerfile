@@ -1,10 +1,6 @@
-FROM python:3.11-slim
+FROM python:3.11-slim AS builder
 
-# Avoid writing .pyc files and enable unbuffered output
-ENV PYTHONDONTWRITEBYTECODE=1
-ENV PYTHONUNBUFFERED=1
-
-# Install system dependencies
+# Install system dependencies for NJOY compilation
 RUN apt-get update && apt-get install -y \
     build-essential \
     gfortran \
@@ -13,15 +9,25 @@ RUN apt-get update && apt-get install -y \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
-# install the notebook package
+# --- Build NJOY2016 ---
+RUN git clone --depth 1 https://github.com/njoy/NJOY2016.git \
+ && cd NJOY2016 && mkdir build && cd build \
+ && cmake -DPython3_EXECUTABLE=$(which python3) .. \
+ && make -j$(nproc) && make install
+
+# --- Stage 2: Final Image ---
+FROM python:3.11-slim
+
+# Avoid writing .pyc files and enable unbuffered output
+ENV PYTHONDONTWRITEBYTECODE=1
+ENV PYTHONUNBUFFERED=1
+
+# install sandy and the notebook package
 RUN pip install --no-cache --upgrade pip && \
     pip install --no-cache notebook jupyterlab \
     matplotlib \
     seaborn \
     scikit-learn \
-    pandas \
-    numpy \
-    scipy \
     serpentTools \
     sandy
 
@@ -36,10 +42,11 @@ RUN adduser --disabled-password \
     --uid ${NB_UID} \
     ${NB_USER}
 WORKDIR ${HOME}
+# Switch to the non-root user
 USER ${USER}
 
-# --- Build NJOY2016 and keep only the binary ---
-RUN git clone --depth 1 https://github.com/njoy/NJOY2016.git \
- && cd NJOY2016 && mkdir build && cd build \
- && cmake -DPython3_EXECUTABLE=$(which python3) .. \
- && make -j$(nproc) && make install
+# Copy the NJOY binary from the builder stage
+COPY --from=builder /usr/local/bin/njoy /usr/local/bin/
+
+# Set NJOY environment variable
+ENV NJOY=/usr/local/bin/njoy
