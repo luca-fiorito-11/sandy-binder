@@ -25,12 +25,6 @@ RUN pip install --no-cache --upgrade pip && \
     serpentTools \
     sandy
 
-# --- Build NJOY2016 and keep only the binary ---
-RUN git clone --depth 1 https://github.com/njoy/NJOY2016.git \
- && cd NJOY2016 && mkdir build && cd build \
- && cmake -DPython3_EXECUTABLE=$(which python3) .. \
- && make -j$(nproc) && make install
-
 # create user with a home directory
 ARG NB_USER
 ARG NB_UID
@@ -43,3 +37,9 @@ RUN adduser --disabled-password \
     ${NB_USER}
 WORKDIR ${HOME}
 USER ${USER}
+
+# --- Build NJOY2016 and keep only the binary ---
+RUN git clone --depth 1 https://github.com/njoy/NJOY2016.git \
+ && cd NJOY2016 && mkdir build && cd build \
+ && cmake -DPython3_EXECUTABLE=$(which python3) .. \
+ && make -j$(nproc) && make install
